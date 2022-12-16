@@ -1,0 +1,24 @@
+---
+- name: Check if the migrations folder exists.
+  stat:
+    path: "{{ git_app }}/migrations"
+  register: migrations
+
+- name: Initialize local database.
+  shell: '~/.local/bin/flask db init'
+  args:
+    chdir: "{{ git_app }}"
+  become_user: "{{ user }}"
+  when: not migrations.stat.exists
+
+- name: Migrate database.
+  shell: '~/.local/bin/flask db migrate'
+  args:
+    chdir: "{{ git_app }}"
+  become_user: "{{ user }}"
+
+- name: Upgrade the database.
+  shell: '~/.local/bin/flask db upgrade'
+  args:
+    chdir: "{{ git_app }}"
+  become_user: "{{ user }}"

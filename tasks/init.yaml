@@ -1,0 +1,60 @@
+---
+- name: Create user if it doesn't exist.
+  user:
+    name: "{{ user }}"
+    shell: /bin/bash
+    home: "/home/{{ user }}"
+    groups: wheel
+    append: yes
+
+- name: Clone github repository.
+  git:
+    repo: '{{ gitrepo }}'
+    dest: '{{ git_app }}'
+    clone: yes
+    update: no
+  become_user: "{{ user }}"
+
+- name: Set environmental variables.
+  lineinfile:
+    dest: "/etc/environment"
+    state: present
+    regexp: "^{{ item.key }}="
+    line: "{{ item.key }}={{ item.value }}"
+  with_items: "{{ os_environment }}"
+
+- name: Create a folder for database dumps.
+  file:
+    state: directory
+    path: "{{ dumps }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
+- name: Change ownership of the app folder.
+  file:
+    path: '{{ git_app }}'
+    state: directory
+    recurse: yes
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
+- name: Ensure the firewall is running.
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Allow ports 5000 and 5432 in firewalld.
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  with_items:
+    - 5000/tcp
+    - 5432/tcp
+
+- name: Restart firewall after changes.
+  service:
+    name: firewalld
+    state: restarted

@@ -1,0 +1,22 @@
+---
+- name: Install dependencies.
+  dnf:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - libpq-devel
+    - nc
+    - git
+
+- name: Install Python dependencies.
+  pip: 
+    name: "{{ item }}"
+    extra_args: --user
+    executable: /usr/local/bin/pip3.11
+  with_items:
+    - Flask
+    - flask-migrate
+    - SQLAlchemy
+    - psycopg2
+    - flask_login
+  become_user: "{{ user }}"
