@@ -1,32 +1,41 @@
 ---
-- name: Install dependencies
-  dnf:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - curl
-    - gcc 
-    - openssl-devel
-    - bzip2-devel 
-    - libffi-devel 
-    - zlib-devel 
-    - tar 
-    - wget 
-    - make
+- name: Verify if python3.11 is installed.
+  stat:
+    path: "/usr/local/bin/python3.11"
+  register: python_exec
 
-- name: Create a directory for Python.
-  file:
-    path: /opt/python311
-    state: directory
+- name: Install Python3.11 if it is not installed.
+  block:
+  - name: Install dependencies
+    dnf:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - curl
+      - gcc 
+      - openssl-devel
+      - bzip2-devel 
+      - libffi-devel 
+      - zlib-devel 
+      - tar 
+      - wget 
+      - make
 
-- name: Download and Unarchive Python 3.11.
-  unarchive:
-    src: https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tgz
-    dest: /opt/python311
-    remote_src: yes
+  - name: Create a directory for Python.
+    file:
+      path: /opt/python311
+      state: directory
 
-- name: Build and Compile Python3.11.
-  shell: >
-    cd /opt/python311/Python-3.11.1 &&
-    ./configure --enable-optimizations &&
-    make && make altinstall
+  - name: Download and Unarchive Python 3.11.
+    unarchive:
+      src: https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tgz
+      dest: /opt/python311
+      remote_src: yes
+
+  - name: Build and Compile Python3.11.
+    shell: >
+      cd /opt/python311/Python-3.11.1 &&
+      ./configure --enable-optimizations &&
+      make && make altinstall
+
+  when: not python_exec.stat.exists

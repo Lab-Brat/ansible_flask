@@ -7,16 +7,16 @@
     - libpq-devel
     - nc
     - git
+    - python-setuptools
 
 - name: Install Python dependencies.
   pip: 
     name: "{{ item }}"
-    extra_args: --user
     executable: /usr/local/bin/pip3.11
   with_items:
+    - setuptools
     - Flask
     - flask-migrate
     - SQLAlchemy
     - psycopg2
     - flask_login
-  become_user: "{{ user }}"

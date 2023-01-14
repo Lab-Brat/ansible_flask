@@ -3,6 +3,10 @@
   include_tasks:
     file: python.yaml
 
+- name: Include dependencies task.
+  include_tasks:
+    file: dependencies.yaml
+
 - name: Include init task.
   include_tasks:
     file: init.yaml
@@ -14,15 +18,17 @@
 - name: Include Postgres task.
   include_tasks:
     file: postgres.yaml
-
-- name: Include dependencies task.
-  include_tasks:
-    file: dependencies.yaml
+  vars:
+    ansible_python_interpreter: /usr/local/bin/python3.11
 
 - name: Include create database task.
   include_tasks:
     file: create_database.yaml
+  vars:
+    ansible_python_interpreter: /usr/local/bin/python3.11
 
 - name: Include deploy app task.
   include_tasks:
     file: deploy_app.yaml
+  vars:
+    ansible_python_interpreter: /usr/local/bin/python3.11
