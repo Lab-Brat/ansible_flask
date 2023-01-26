@@ -3,10 +3,9 @@ pg_conf: '/var/lib/pgsql/data/postgresql.conf'
 pg_hba:  '/var/lib/pgsql/data/pg_hba.conf'
 gitrepo: 'https://github.com/Lab-Brat/flask_masque.git'
 git_app: "/home/{{ user }}/flask_masque"
-bashrc:  "/home/{{ user }}/.bashrc"
 dumps:   "/home/{{ user }}/dumps"
 samples: "{{ git_app }}/samples"
-env_app: 'app.py'
+env_app: 'app/app.py'
 env_mod: 'development'
 db_port: 5432
 db_user: "{{ user }}"
@@ -15,8 +14,8 @@ db_pass: 'password'
 os_environment:
   - key: FLASK_APP
     value: "{{ env_app }}"
-  - key: FLASK_ENV
-    value: 'development'
+  - key: FLASK_DEBUG
+    value: 1
   - key: DB_PORT
     value: "{{ db_port }}"
   - key: DB_USER
